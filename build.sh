@@ -16,12 +16,12 @@ echo "💻 Installing required packages..."
 sudo apt install debootstrap grub-efi-arm64 qemu-user-static xorriso
 
 if ![ -e $ROOTFS_DIR ]; then
-  # === 2. Bootstrap minimal Debian system ===
-  echo "🚀 Bootstrapping Debian $ARCH..."
-  echo "👨‍🏫 We're gonna bootstrap a super duper minimal Debian system."
-  echo "👨‍🏫 Then we do other stuff that we need. Sleeping for 2 seconds then start bootstrapping..."
-  sleep 2
-  sudo debootstrap --arch=$ARCH $RELEASE "$ROOTFS_DIR" http://deb.debian.org/debian
+# === 2. Bootstrap minimal Debian system ===
+echo "🚀 Bootstrapping Debian $ARCH..."
+echo "👨‍🏫 We're gonna bootstrap a super duper minimal Debian system."
+echo "👨‍🏫 Then we do other stuff that we need. Sleeping for 2 seconds then start bootstrapping..."
+sleep 2
+sudo debootstrap --arch=$ARCH $RELEASE "$ROOTFS_DIR" http://deb.debian.org/debian
 fi
 
 # === 3. Prepare ISO root structure ===
@@ -34,6 +34,14 @@ mkdir -p "$ISO_DIR/install"
 
 echo "💾 Mounting special filesystems..."
 sudo mount --bind /dev "$ROOTFS_DIR/dev"
+
+echo "ℹ️ For some reason, /dev/pts will be unmounted and sudo will stop working."
+echo "👨‍🏫 You must enter the root password of your system then run this command without sudo:"
+echo "👨‍🏫 mount none -t devpts /dev/pts"
+echo "👨‍🏫 Then enter command 'exit'"
+echo "You will see a shell. don't worry, the script is still running. It will continue when you exit from the root shell."
+su -
+
 sudo mount --bind /proc "$ROOTFS_DIR/proc"
 sudo mount --bind /sys "$ROOTFS_DIR/sys"
 
