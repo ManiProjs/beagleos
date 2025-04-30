@@ -9,7 +9,10 @@ ARCH="arm64"
 RELEASE="bookworm"
 ROOTFS_DIR="./chroot"
 ISO_DIR="./iso_root"
+ESP=./esp
 IMAGE_NAME="${DISTRO_NAME,,}-${DISTRO_VERSION}-${CODENAME}-live-${ARCH}.iso"
+
+mkdir -p "$ESP"
 
 # === 1. Install required packages ===
 echo "💻 Installing required packages..."
@@ -82,10 +85,32 @@ menuentry "Install $DISTRO_NAME (Debian Installer)" {
 }
 EOF
 
-# === 7. Add GRUB EFI bootloader ===
-echo "⚙️  Installing GRUB EFI bootloader..."
+# === 7. Create ESP partition and install GRUB ===
+echo "⚙️  Creating EFI System Partition and installing GRUB..."
+
+# Create FAT32 ESP image (64MB)
+ESP_IMG="$ESP/efiboot.img"
+dd if=/dev/zero of="$ESP_IMG" bs=1M count=64
+mkfs.vfat "$ESP_IMG"
+
+# Mount ESP image
+mkdir -p ./esp_mount
+sudo mount "$ESP_IMG" ./esp_mount
+
+# Install GRUB into ESP
+sudo grub-install \
+  --target=arm64-efi \
+  --efi-directory=./esp_mount \
+  --boot-directory="$ISO_DIR/boot" \
+  --removable \
+  --no-nvram
+
+sudo umount ./esp_mount
+rm -r ./esp_mount
+
+# Copy ESP into ISO structure
 mkdir -p "$ISO_DIR/EFI/BOOT"
-grub-mkimage -o "$ISO_DIR/EFI/BOOT/BOOTAA64.EFI" -O arm64-efi -p /boot/grub efi_gop fat iso9660 part_gpt part_msdos normal linux configfile loopback search search_fs_uuid search_label terminal cat gfxterm gfxmenu
+mcopy -i "$ESP_IMG" ::/EFI/BOOT/BOOTAA64.EFI "$ISO_DIR/EFI/BOOT/BOOTAA64.EFI"
 
 # === 8. Build the ISO ===
 echo "💿 Building ISO image..."
