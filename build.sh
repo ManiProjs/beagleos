@@ -12,15 +12,29 @@ IMAGE_NAME="${DISTRO_NAME,,}-${DISTRO_VERSION}-${CODENAME}-${ARCH}.iso"
 
 # === 1. Bootstrap minimal Debian system ===
 echo "🚀 Bootstrapping Debian $ARCH..."
+echo "👨‍🏫 We're gonna bootstrap a super duper minimal Debian system."
+echo "👨‍🏫 Then we do other stuff that we need. Doing it in 2 seconds..."
+sleep 2
 sudo debootstrap --arch=$ARCH bookworm "$ROOTFS_DIR" http://deb.debian.org/debian
 
 # === 2. Prepare ISO root structure ===
 echo "📂 Preparing ISO root..."
+echo "👨‍🏫 We're gonna create some directory for booting. We're gonna need it for GRUB (GRand Unified Bootloader) and installer"
+echo "👨‍🏫 Installer helps you install BeagleOS without doing it manually."
+sleep 2
 mkdir -p "$ISO_DIR/boot/grub"
 mkdir -p "$ISO_DIR/install"
 
+echo "🐧 Now you will be chroot'ed to the bootstrapped system"
+echo "👨‍🏫 You're gonna run 'apt install sudo linux-image-arm64 systemd-sys'v'"
+echo "👨‍🏫 Plus, you can add additional packages such as 'zsh', 'bash-completions' and more."
+echo "👨‍🏫 Once it's finished, enter the command 'exit' to exit from the chroot'ed system."
+echo "⚠️ This is required, if you don't do that, the ISO file will be incomplete! 😱"
+sudo chroot chroot
+
 # === 3. Copy kernel and initrd from chroot ===
 echo "📦 Copying kernel and initrd..."
+echo "👨‍🏫 This gonna copy the Linux kernel (yes, Linux!) and initrd.img to the ISO root."
 cp "$ROOTFS_DIR/boot/vmlinuz"* "$ISO_DIR/boot/vmlinuz"
 cp "$ROOTFS_DIR/boot/initrd.img"* "$ISO_DIR/boot/initrd.img"
 
