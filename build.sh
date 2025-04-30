@@ -35,6 +35,12 @@ sudo mount --bind /dev "$ROOTFS/dev"
 sudo mount --bind /proc "$ROOTFS/proc"
 sudo mount --bind /sys "$ROOTFS/sys"
 
+echo "ℹ️ For some reason, /dev/pts will be unmounted and sudo will stop working."
+echo "👨‍🏫 You must enter the root password of your system then run this command without sudo:"
+echo "👨‍🏫 mount none -t devpts /dev/pts"
+echo "👨‍🏫 Then enter command 'exit'"
+su -
+
 echo "🐧 Installing Linux kernel and some additional packages"
 sudo cp /usr/bin/qemu-aarch64-static "$ROOTFS/usr/bin/"
 sudo chroot "$ROOTFS" /bin/bash -c "
