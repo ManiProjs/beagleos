@@ -22,7 +22,7 @@ if ![ -e $ROOTFS_DIR ]; then
   echo "👨‍🏫 Then we do other stuff that we need. Sleeping for 2 seconds then start bootstrapping..."
   sleep 2
   sudo debootstrap --arch=$ARCH $RELEASE "$ROOTFS_DIR" http://deb.debian.org/debian
-done
+fi
 
 # === 3. Prepare ISO root structure ===
 echo "📂 Preparing ISO root..."
