@@ -85,7 +85,7 @@ EOF
 # === 7. Add GRUB EFI bootloader ===
 echo "⚙️  Installing GRUB EFI bootloader..."
 mkdir -p "$ISO_DIR/EFI/BOOT"
-grub-mkimage -o "$ISO_DIR/EFI/BOOT/BOOTAA64.EFI" -O arm64-efi -p /boot/grub efi_gop efi_uga fat iso9660 part_gpt part_msdos normal linux configfile loopback search search_fs_uuid search_label terminal cat gfxterm gfxmenu
+grub-mkimage -o "$ISO_DIR/EFI/BOOT/BOOTAA64.EFI" -O arm64-efi -p /boot/grub efi_gop fat iso9660 part_gpt part_msdos normal linux configfile loopback search search_fs_uuid search_label terminal cat gfxterm gfxmenu
 
 # === 8. Build the ISO ===
 echo "💿 Building ISO image..."
