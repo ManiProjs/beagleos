@@ -15,12 +15,14 @@ IMAGE_NAME="${DISTRO_NAME,,}-${DISTRO_VERSION}-${CODENAME}-live-${ARCH}.iso"
 echo "💻 Installing required packages..."
 sudo apt install debootstrap grub-efi-arm64 qemu-user-static xorriso
 
-# === 2. Bootstrap minimal Debian system ===
-echo "🚀 Bootstrapping Debian $ARCH..."
-echo "👨‍🏫 We're gonna bootstrap a super duper minimal Debian system."
-echo "👨‍🏫 Then we do other stuff that we need. Sleeping for 2 seconds then start bootstrapping..."
-sleep 2
-sudo debootstrap --arch=$ARCH $RELEASE "$ROOTFS_DIR" http://deb.debian.org/debian
+if ![ -e $ROOTFS_DIR ]; then
+  # === 2. Bootstrap minimal Debian system ===
+  echo "🚀 Bootstrapping Debian $ARCH..."
+  echo "👨‍🏫 We're gonna bootstrap a super duper minimal Debian system."
+  echo "👨‍🏫 Then we do other stuff that we need. Sleeping for 2 seconds then start bootstrapping..."
+  sleep 2
+  sudo debootstrap --arch=$ARCH $RELEASE "$ROOTFS_DIR" http://deb.debian.org/debian
+done
 
 # === 3. Prepare ISO root structure ===
 echo "📂 Preparing ISO root..."
@@ -31,21 +33,13 @@ mkdir -p "$ISO_DIR/boot/grub"
 mkdir -p "$ISO_DIR/install"
 
 echo "💾 Mounting special filesystems..."
-sudo mount --bind /dev "$ROOTFS/dev"
-
-echo "ℹ️ For some reason, /dev/pts will be unmounted and sudo will stop working."s
-echo "👨‍🏫 You must enter the root password of your system then run this command without sudo:"
-echo "👨‍🏫 mount none -t devpts /dev/pts"
-echo "👨‍🏫 Then enter command 'exit'"
-echo "You will see a shell. don't worry, the script is still running. It will continue when you exit from the root shell."
-su -
-
-sudo mount --bind /proc "$ROOTFS/proc"
-sudo mount --bind /sys "$ROOTFS/sys"
+sudo mount --bind /dev "$ROOTFS_DIR/dev"
+sudo mount --bind /proc "$ROOTFS_DIR/proc"
+sudo mount --bind /sys "$ROOTFS_DIR/sys"
 
 echo "🐧 Installing Linux kernel and some additional packages"
 sudo cp /usr/bin/qemu-aarch64-static "chroot/usr/bin/qemu-aarch64-static"
-sudo chroot "$ROOTFS" /bin/bash -c "
+sudo chroot "$ROOTFS_DIR" /bin/bash -c "
   apt-get update &&
   apt-get install -y linux-image-arm64 systemd-sysv grub-efi-arm64 shim-signed zsh fish bash-completion neofetch 
 "
