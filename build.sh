@@ -58,10 +58,12 @@ echo "👨‍🏫 This gonna copy the Linux kernel (yes, Linux!) and initrd.img 
 cp "$ROOTFS_DIR/boot/vmlinuz"* "$ISO_DIR/boot/vmlinuz"
 cp "$ROOTFS_DIR/boot/initrd.img"* "$ISO_DIR/boot/initrd.img"
 
-# === 5. Download Debian Installer ===
-echo "📥 Downloading Debian Installer files..."
-curl -o "$ISO_DIR/install/vmlinuz" "https://deb.debian.org/debian/dists/bookworm/main/installer-arm64/current/images/netboot/debian-installer/arm64/linux"
-curl -o "$ISO_DIR/install/initrd.gz" "https://deb.debian.org/debian/dists/bookworm/main/installer-arm64/current/images/netboot/debian-installer/arm64/initrd.gz"
+if ![ -e "$ISO_DIR/install/vmlinuz" ]; then
+  # === 5. Download Debian Installer ===
+  echo "📥 Downloading Debian Installer files..."
+  curl -o "$ISO_DIR/install/vmlinuz" "https://deb.debian.org/debian/dists/bookworm/main/installer-arm64/current/images/netboot/debian-installer/arm64/linux"
+  curl -o "$ISO_DIR/install/initrd.gz" "https://deb.debian.org/debian/dists/bookworm/main/installer-arm64/current/images/netboot/debian-installer/arm64/initrd.gz"
+fi
 
 # === 6. Create grub.cfg ===
 echo "📝 Creating GRUB config..."
